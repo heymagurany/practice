@@ -1,0 +1,82 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2012 for Web
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleSearchEngine", "SimpleSearchEngine\SimpleSearchEngine.csproj", "{4F57C936-6DB2-4953-B1F1-6462BE2FFEF9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{8A51192E-A880-46C1-8558-8FC5DD2ECA90}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleSearchEngine.Tests", "SimpleSearchEngine.Tests\SimpleSearchEngine.Tests.csproj", "{C094BC49-684E-494C-9381-9760653BD858}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5DD02190-53FF-4DC1-8FB7-6A8953FC4622}"
+	ProjectSection(SolutionItems) = preProject
+		Local.testsettings = Local.testsettings
+		SimpleSearchEngine.vsmdi = SimpleSearchEngine.vsmdi
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIndexer", "SimpleIndexer\SimpleIndexer.csproj", "{D3CB484D-4F72-4F62-9600-8E0B6D306316}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleSearchEngine.Common", "SimpleSearchEngine.Common\SimpleSearchEngine.Common.csproj", "{0923DA84-E231-475C-80BD-C7398DBE4D66}"
+EndProject
+Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = SimpleSearchEngine.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4F57C936-6DB2-4953-B1F1-6462BE2FFEF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F57C936-6DB2-4953-B1F1-6462BE2FFEF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F57C936-6DB2-4953-B1F1-6462BE2FFEF9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4F57C936-6DB2-4953-B1F1-6462BE2FFEF9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4F57C936-6DB2-4953-B1F1-6462BE2FFEF9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4F57C936-6DB2-4953-B1F1-6462BE2FFEF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F57C936-6DB2-4953-B1F1-6462BE2FFEF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F57C936-6DB2-4953-B1F1-6462BE2FFEF9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4F57C936-6DB2-4953-B1F1-6462BE2FFEF9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4F57C936-6DB2-4953-B1F1-6462BE2FFEF9}.Release|x86.ActiveCfg = Release|Any CPU
+		{C094BC49-684E-494C-9381-9760653BD858}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C094BC49-684E-494C-9381-9760653BD858}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C094BC49-684E-494C-9381-9760653BD858}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C094BC49-684E-494C-9381-9760653BD858}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C094BC49-684E-494C-9381-9760653BD858}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C094BC49-684E-494C-9381-9760653BD858}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C094BC49-684E-494C-9381-9760653BD858}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C094BC49-684E-494C-9381-9760653BD858}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C094BC49-684E-494C-9381-9760653BD858}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C094BC49-684E-494C-9381-9760653BD858}.Release|x86.ActiveCfg = Release|Any CPU
+		{D3CB484D-4F72-4F62-9600-8E0B6D306316}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{D3CB484D-4F72-4F62-9600-8E0B6D306316}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{D3CB484D-4F72-4F62-9600-8E0B6D306316}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{D3CB484D-4F72-4F62-9600-8E0B6D306316}.Debug|x86.ActiveCfg = Debug|x86
+		{D3CB484D-4F72-4F62-9600-8E0B6D306316}.Debug|x86.Build.0 = Debug|x86
+		{D3CB484D-4F72-4F62-9600-8E0B6D306316}.Release|Any CPU.ActiveCfg = Release|x86
+		{D3CB484D-4F72-4F62-9600-8E0B6D306316}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{D3CB484D-4F72-4F62-9600-8E0B6D306316}.Release|Mixed Platforms.Build.0 = Release|x86
+		{D3CB484D-4F72-4F62-9600-8E0B6D306316}.Release|x86.ActiveCfg = Release|x86
+		{D3CB484D-4F72-4F62-9600-8E0B6D306316}.Release|x86.Build.0 = Release|x86
+		{0923DA84-E231-475C-80BD-C7398DBE4D66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0923DA84-E231-475C-80BD-C7398DBE4D66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0923DA84-E231-475C-80BD-C7398DBE4D66}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0923DA84-E231-475C-80BD-C7398DBE4D66}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0923DA84-E231-475C-80BD-C7398DBE4D66}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0923DA84-E231-475C-80BD-C7398DBE4D66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0923DA84-E231-475C-80BD-C7398DBE4D66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0923DA84-E231-475C-80BD-C7398DBE4D66}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0923DA84-E231-475C-80BD-C7398DBE4D66}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0923DA84-E231-475C-80BD-C7398DBE4D66}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

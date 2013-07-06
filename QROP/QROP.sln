@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2012 for Web
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QROP", "QROP\QROP.csproj", "{A64252CD-ABA1-4FF5-8F59-EA9A65AAC9DB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{A2DC4E2E-707F-4ABD-BD0A-B7B3B6A96B7E}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A64252CD-ABA1-4FF5-8F59-EA9A65AAC9DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A64252CD-ABA1-4FF5-8F59-EA9A65AAC9DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A64252CD-ABA1-4FF5-8F59-EA9A65AAC9DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A64252CD-ABA1-4FF5-8F59-EA9A65AAC9DB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="Index"
+  targetNamespace="http://schemas.magurany.com/search"
+  elementFormDefault="qualified"
+  xmlns:m="http://schemas.magurany.com/search"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Index">
+    <xs:complexType>
+      <xs:sequence minOccurs="1" maxOccurs="1">
+        <xs:element name="Words" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence minOccurs="1" maxOccurs="1">
+              <xs:element name="Word" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence minOccurs="1" maxOccurs="1">
+                    <xs:element name="File" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:attribute name="Path" type="xs:string" use="required" />
+                        <xs:attribute name="Count" type="xs:unsignedInt" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="Word" type="xs:string" use="required" />
+                  <xs:attribute name="Count" type="xs:unsignedInt" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Files">
+          <xs:complexType>
+            <xs:sequence minOccurs="1" maxOccurs="1">
+              <xs:element name="File" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="Path" type="xs:string" use="required" />
+                  <xs:attribute name="Title" type="xs:string" use="required" />
+                  <xs:attribute name="Preview" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:key name="FileKey">
+      <xs:selector xpath="m:Files/m:File" />
+      <xs:field xpath="@Path" />
+    </xs:key>
+    <xs:keyref name="FileReference" refer="m:FileKey">
+      <xs:selector xpath="m:Words/m:Word/m:File" />
+      <xs:field xpath="@Path" />
+    </xs:keyref>
+  </xs:element>
+</xs:schema>

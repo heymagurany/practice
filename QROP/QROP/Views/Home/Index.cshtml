@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<html>
+<body>
+<h2>Index</h2>
+
+@using(Html.BeginForm()) {
+	<label>Plain Text</label>
+	@Html.TextBox("plainText")
+
+	<button>Base 32 Encode</button> @ViewBag.Encoded
+}
+
+<label>Secret</label>
+<div id="secret">@ViewBag.Secret</div>
+
+<label>Code</label>
+<div>@ViewBag.Code</div>
+
+<label>QR Code</label>
+<div id="qrcode"></div>
+
+@Ajax.ActionLink("Generate Secret", "generate", new AjaxOptions { HttpMethod = "GET", OnSuccess = "onGenerateSuccess" })
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-2.0.2.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/qrcode.min.js")"></script>
+<script type="text/javascript">
+	var qrcode = new QRCode(document.getElementById("qrcode"), "@ViewBag.Secret");
+
+	function onGenerateSuccess(uri) {
+		$("#secret").text(uri);
+		qrcode.clear();
+		qrcode.makeCode(uri);
+	}
+</script>
+</body>
+</html>

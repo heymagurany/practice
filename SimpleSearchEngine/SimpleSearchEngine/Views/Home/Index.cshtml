@@ -1,0 +1,72 @@
+﻿@using System.Web.Optimization
+@using Magurany.SimpleSearchEngine.Web.Models
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Matt Magurany's Simple Search Engine</title>
+	@Styles.Render("~/bundles/css")
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="span12">
+				<div class="hero-unit">
+					<h2>Matt Magurany's Simple Search Engine</h2>
+					<p>My search engine is pretty simple. The more often a word appears in a file, the higher that file will appear in the search results. The search suggestions are also order by the most used words, descending.</p>
+				</div>
+			</div>
+		</div>
+		<div class="navbar">
+			<div class="navbar-inner">
+			@{
+				AjaxOptions ajaxOptions = new AjaxOptions();
+				ajaxOptions.HttpMethod = "POST";
+				ajaxOptions.OnSuccess = "onSearchSuccess";
+				ajaxOptions.OnFailure = "onSearchFail";
+				ajaxOptions.LoadingElementId = "loading";
+				ajaxOptions.LoadingElementDuration = 500;
+				
+				List<SelectListItem> selectList = new List<SelectListItem>();
+
+				foreach(object value in Enum.GetValues(typeof(SearchType)))
+				{
+					SelectListItem item = new SelectListItem();
+					item.Text = Enum.GetName(typeof(SearchType), value);
+
+					selectList.Add(item);
+				}
+					   
+				IDictionary<string, object> attributes = new Dictionary<string, object>();
+				attributes.Add("class", "span5");
+				attributes.Add("placeholder", "search");
+				attributes.Add("data-provide", "typeahead");
+			}
+			@using(Ajax.BeginForm("search", null, ajaxOptions, new { @class = "navbar-form pull-left" }))
+			{
+				<span>@Html.DropDownList("searchType", selectList, new { @class = "span2" })</span>
+				@Html.TextBox("searchTerms", null, attributes)
+				<button class="btn btn-primary" type="submit">Search</button>
+				<span id="loading" class="loading"></span>
+			}
+			</div>
+		</div>
+		<div id="error" class="row" style="display:none;">
+			<div class="span12">
+				<div id="errorMessage" class="alert alert-error"></div>
+			</div>
+		</div>
+		<div class="row" data-bind="foreach: searchResults">
+			<div class="span12 result">
+				<strong><a class="title" data-bind="attr: { href: url }, text: title"></a></strong>
+				<a class="url" data-bind="attr: { href: url }, text: url"></a>
+				<p data-bind="text: preview"></p>
+			</div>
+		</div>
+	</div>
+	@Scripts.Render("~/bundles/js")
+</body>
+</html>
