@@ -1,43 +1,33 @@
 ﻿function IrrigationControl(map) {
     // Create a div to hold the control.
-    var controlDiv = document.createElement('div');
-
-    // Set CSS styles for the DIV containing the control
-    // Setting padding to 5 px will offset the control
-    // from the edge of the map.
-    controlDiv.style.padding = '5px';
-
     var $radiusInput = $("<input type='text' />");
     var $radiusUnitsInput = $("<select><option value='3.2808'>feet</options><option value='1'>meters</options></select>");
     var $radiusContainer = $("<div style='background-color:white;border-style:solid;border-width:2px;padding-left:4px;padding-right:4px'>Arm Length: </div>").append($radiusInput, $radiusUnitsInput);
 
-    controlDiv.appendChild($radiusContainer[0]);
+    var $centerLatInput = $("<input type='text' />");
+    var $centerLngInput = $("<input type='text' />");
+    var $centerContainer = $("<div style='background-color:white;border-style:solid;border-width:2px;padding-left:4px;padding-right:4px'>Center: </div>").append($centerLatInput, $centerLngInput);
+
+    var $startBearingInput = $("<input type='text' />");
+    var $startBearingContainer = $("<div style='background-color:white;border-style:solid;border-width:2px;padding-left:4px;padding-right:4px'>Start Bearing: </div>").append($startBearingInput);
+
+    var $endBearingInput = $("<input type='text' />");
+    var $endBearingContainer = $("<div style='background-color:white;border-style:solid;border-width:2px;padding-left:4px;padding-right:4px'>End Bearing: </div>").append($endBearingInput);
+
+    var $control = $("<div style='padding:5px'></div>").append($radiusContainer, $centerContainer, $startBearingContainer, $endBearingContainer);
 
     // Set CSS for the control border.
     var addButton = function (text, onClick) {
-        var controlText = document.createElement('div');
-        controlText.style.fontFamily = 'Arial,sans-serif';
-        controlText.style.fontSize = '12px';
-        controlText.style.paddingLeft = '4px';
-        controlText.style.paddingRight = '4px';
-        controlText.innerHTML = '<strong>' + text + '</strong>';
+        var $text = $("<div style='font-family:Arial,sans-serif;font-size:12px;padding-left:4px;padding-right:4px;'></div>").html(text);
+        var $button = $("<div style='background-color:white;border-style:solid;border-width:2px;cursor:pointer;text-align:center'></div>").append($text);
 
-        var controlUI = document.createElement('div');
-        controlUI.style.backgroundColor = 'white';
-        controlUI.style.borderStyle = 'solid';
-        controlUI.style.borderWidth = '2px';
-        controlUI.style.cursor = 'pointer';
-        controlUI.style.textAlign = 'center';
-        controlUI.title = 'Click to set the map to Home';
-        controlUI.appendChild(controlText);
+        $control.append($button);
 
-        controlDiv.appendChild(controlUI);
-
-        google.maps.event.addDomListener(controlUI, "click", onClick);
+        google.maps.event.addDomListener($button[0], "click", onClick);
     }
 
     this.getElement = function () {
-        return controlDiv;
+        return $control[0];
     }
 
     var clickCount = 0;
@@ -47,17 +37,45 @@
     var endMarker;
     var centerPoint;
     var centerMarker;
-    var _radius;
+    var radius;
     var arc;
     var infowindow = new google.maps.InfoWindow(
     {
         size: new google.maps.Size(150, 50)
     });
 
-    $radiusContainer.change(function (e) {
-        _radius = parseFloat($radiusInput.val()) / parseFloat($radiusUnitsInput.val());
+    $radiusContainer.change(function () {
+        radius = parseFloat($radiusInput.val()) / parseFloat($radiusUnitsInput.val());
 
         drawArc();
+    });
+
+    $centerLatInput.change(function () {
+        if(centerMarker) {
+            centerMarker.setMap(null);
+        }
+
+        centerPoint = new google.maps.LatLng(parseFloat($centerLatInput.val()), centerPoint.lng());
+        centerMarker = createMarker(centerPoint, "Center");
+        arc = drawArc();
+    });
+
+    $centerLngInput.change(function () {
+        if(centerMarker) {
+            centerMarker.setMap(null);
+        }
+
+        centerPoint = new google.maps.LatLng(centerPoint.lat(), parseFloat($centerLngInput.val()));
+        centerMarker = createMarker(centerPoint, "Center");
+        arc = drawArc();
+    });
+
+    $startBearingInput.change(function () {
+        if(startMarker) {
+            startMarker.setMap(null);
+        }
+
+
     });
 
     addButton("Clear Irrigation", function () {
@@ -75,6 +93,11 @@
         }
 
         clickCount = 0;
+
+        $centerLatInput.val("");
+        $centerLngInput.val("");
+        $startBearingInput.val("");
+        $endBearingInput.val("");
     });
 
     var createMarker = function (latlng, html) {
@@ -85,7 +108,6 @@
             map: map,
             zIndex: Math.round(latlng.lat() * -100000) << 5
         });
-        //bounds.extend(latlng);
         google.maps.event.addListener(marker, 'click', function () {
             infowindow.setContent(contentString);
             infowindow.open(map, marker);
@@ -96,20 +118,20 @@
     var createArcVertices = function (center, start, end, direction) {
         var initialBearing = center.Bearing(start);
         var finalBearing = center.Bearing(end);
-        var radius;
+        var useRadius;
         var points = 32;
         var extp = new Array();
 
-        if (_radius) {
-            radius = _radius;
+        if (radius) {
+            useRadius = radius;
         } else {
             var distanceFromStart = center.distanceFrom(start);
             var distanceFromEnd = center.distanceFrom(end);
 
             if (distanceFromStart > distanceFromEnd) {
-                radius = distanceFromStart;
+                useRadius = distanceFromStart;
             } else {
-                radius = distanceFromEnd;
+                useRadius = distanceFromEnd;
             }
         }
 
@@ -132,13 +154,13 @@
         }
 
         for (var i = 0; i <= points; i++) {
-            var point = center.DestinationPoint(initialBearing + i * deltaBearing, radius);
+            var point = center.DestinationPoint(initialBearing + i * deltaBearing, useRadius);
 
             extp.push(point);
         }
 
         extp.push(center);
-        extp.push(center.DestinationPoint(initialBearing, radius));
+        extp.push(center.DestinationPoint(initialBearing, useRadius));
 
         return extp;
     }
@@ -169,28 +191,33 @@
         if (clickCount == 0) {
             centerPoint = e.latLng;
             centerMarker = createMarker(centerPoint, "Center");
+            $centerLatInput.val(centerPoint.lat());
+            $centerLngInput.val(centerPoint.lng());
 
             google.maps.event.addListener(centerMarker, "dragend", function (e) {
                 centerPoint = e.latLng;
-
+                $centerLatInput.val(centerPoint.lat());
+                $centerLngInput.val(centerPoint.lng());
                 arc = drawArc();
             });
         } else if (clickCount == 1) {
             startPoint = e.latLng;
             startMarker = createMarker(startPoint, "Start");
+            $startBearingInput.val(centerPoint.Bearing(startPoint));
 
             google.maps.event.addListener(startMarker, "dragend", function (e) {
                 startPoint = e.latLng;
-
+                $startBearingInput.val(centerPoint.Bearing(startPoint));
                 arc = drawArc();
             });
         } else if (clickCount == 2) {
             endPoint = e.latLng;
             endMarker = createMarker(endPoint, "End");
+            $endBearingInput.val(centerPoint.Bearing(endPoint));
 
             google.maps.event.addListener(endMarker, "dragend", function (e) {
                 endPoint = e.latLng;
-
+                $endBearingInput.val(centerPoint.Bearing(endPoint));
                 arc = drawArc();
             });
 

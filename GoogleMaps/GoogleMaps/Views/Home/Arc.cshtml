@@ -25,7 +25,7 @@
                 var map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
                 var irrigation = new IrrigationControl(map);
 
-                map.controls[google.maps.ControlPosition.TOP_RIGHT].push(irrigation.getElement());
+                map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(irrigation.getElement());
             }
 
             google.maps.event.addDomListener(window, "load", initialize);
