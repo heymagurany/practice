@@ -7,210 +7,25 @@
 {
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4IrIT_byOV1Ov6SwGoTjnKnXtRfKwMRo&sensor=false"></script>
     <script type="text/javascript" src="~/Scripts/v3_epoly.js"></script>
+    <script type="text/javascript" src="~/Scripts/optmzr.maps.extensions.js"></script>
+    <script type="text/javascript" src="~/Scripts/optmzr.maps.irrigation.js"></script>
     <script type="text/javascript">
-        /* Based the on the Latitude/longitude spherical geodesy formulae & scripts
-          at http://www.movable-type.co.uk/scripts/latlong.html
-          (c) Chris Veness 2002-2010
-       */
-        google.maps.LatLng.prototype.DestinationPoint = function (brng, dist) {
-            var radius = 6378137.0; // earth's mean radius in meters
-            var brngRads = brng.toRad();
-            var lat1 = this.lat().toRad(), lon1 = this.lng().toRad();
-            var lat2 = Math.asin(Math.sin(lat1) * Math.cos(dist / radius) + Math.cos(lat1) * Math.sin(dist / radius) * Math.cos(brngRads));
-            var lon2 = lon1 + Math.atan2(Math.sin(brngRads) * Math.sin(dist / radius) * Math.cos(lat1), Math.cos(dist / radius) - Math.sin(lat1) * Math.sin(lat2));
-
-            return new google.maps.LatLng(lat2.toDeg(), lon2.toDeg());
-        }
-
-        // === A function which returns the bearing between two LatLng in radians ===
-        // === If v1 is null, it returns the bearing between the first and last vertex ===
-        // === If v1 is present but v2 is null, returns the bearing from v1 to the next vertex ===
-        // === If either vertex is out of range, returns void ===
-        google.maps.LatLng.prototype.Bearing = function (otherLatLng) {
-            var from = this;
-            var to = otherLatLng;
-            if (from.equals(to)) {
-                return 0;
-            }
-            var lat1 = from.latRadians();
-            var lon1 = from.lngRadians();
-            var lat2 = to.latRadians();
-            var lon2 = to.lngRadians();
-            var angle = -Math.atan2(Math.sin(lon1 - lon2) * Math.cos(lat2), Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon1 - lon2));
-            if (angle < 0.0) {
-                angle += Math.PI * 2.0;
-            }
-            if (angle > Math.PI) {
-                angle -= Math.PI * 2.0;
-            }
-            return parseFloat(angle.toDeg());
-        }
-
-        /**
-         * Extend the Number object to convert degrees to radians
-         */
-        Number.prototype.toRad = function () {
-            return this * Math.PI / 180;
-        };
-
-        /**
-         * Extend the Number object to convert radians to degrees
-         */
-        Number.prototype.toDeg = function () {
-            return this * 180 / Math.PI;
-        };
-
-        /**
-         * Normalize a heading in degrees to between 0 and +360
-         */
-        Number.prototype.toBrng = function () {
-            return (this.toDeg() + 360) % 360;
-        };
-
         (function () {
-            var infowindow = new google.maps.InfoWindow(
-            {
-                size: new google.maps.Size(150, 50)
-            });
-
-            function createMarker(map, latlng, html) {
-                var contentString = html;
-                var marker = new google.maps.Marker({
-                    draggable: true,
-                    position: latlng,
-                    map: map,
-                    zIndex: Math.round(latlng.lat() * -100000) << 5
-                });
-                //bounds.extend(latlng);
-                google.maps.event.addListener(marker, 'click', function () {
-                    infowindow.setContent(contentString);
-                    infowindow.open(map, marker);
-                });
-                return marker;
-            }
-
-            function drawArc(center, start, end, direction) {
-                var initialBearing = center.Bearing(start);
-                var finalBearing = center.Bearing(end);
-                var distanceFromStart = center.distanceFrom(start);
-                var distanceFromEnd = center.distanceFrom(end);
-                var radius;
-                var points = 32;
-                var extp = new Array();
-
-                if(distanceFromStart > distanceFromEnd) {
-                    radius = distanceFromStart;
-                } else {
-                    radius = distanceFromEnd;
-                }
-
-                if (initialBearing > finalBearing) {
-                    if(direction > 0) {
-                        finalBearing += 360;
-                    }
-                } else {
-                    if(direction < 0) {
-                        finalBearing -= 360;
-                    }
-                }
-
-                var deltaBearing = (finalBearing - initialBearing) / points;
-                var maxBearing = 5;
-
-                while ((deltaBearing < -maxBearing) || (deltaBearing > maxBearing)) {
-                    points *= 2;
-                    deltaBearing = (finalBearing - initialBearing) / points;
-                }
-
-                for (var i = 0; (i < points + 1) ; i++) {
-                    var point = center.DestinationPoint(initialBearing + i * deltaBearing, radius);
-
-                    extp.push(point);
-                }
-
-                extp.push(center);
-                extp.push(start);
-
-                return extp;
-            }
-
             function initialize() {
                 var myOptions = {
                     zoom: 17,
-                    center: new google.maps.LatLng(40.470735, -86.928919),
+                    center: new google.maps.LatLng(40.26958832110609, -87.13052988052368),
                     mapTypeControl: true,
                     mapTypeControlOptions: {
                         style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
                     },
                     navigationControl: true,
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                    mapTypeId: google.maps.MapTypeId.SATELLITE
                 }
-
                 var map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
-                var clickCount = 0;
-                var startPoint;
-                var endPoint;
-                var centerPoint;
-                var arc;
-                var draw = function () {
-                    if(startPoint && endPoint && centerPoint) {
-                        if(arc) {
-                            arc.setMap(null);
-                        }
+                var irrigation = new IrrigationControl(map);
 
-                        var arcPts = drawArc(centerPoint, startPoint, endPoint, 1);
-
-                        arc = new google.maps.Polygon({
-                            paths: [arcPts],
-                            strokeColor: "#0000FF",
-                            strokeOpacity: 0.5,
-                            strokeWeight: 2,
-                            fillColor: "#0000FF",
-                            fillOpacity: 0.35,
-                            map: map
-                        });
-                    }
-                }
-
-                google.maps.event.addListener(map, "click", function (e) {
-                    if (clickCount == 0) {
-                        centerPoint = e.latLng;
-
-                        var centerMarker = createMarker(map, centerPoint, "Center");
-
-                        google.maps.event.addListener(centerMarker, "dragend", function (e) {
-                            centerPoint = e.latLng;
-
-                            draw();
-                        });
-                    } else if (clickCount == 1) {
-                        startPoint = e.latLng;
-
-                        var startMarker = createMarker(map, startPoint, "Start");
-
-                        google.maps.event.addListener(startMarker, "dragend", function (e) {
-                            startPoint = e.latLng;
-
-                            draw();
-                        });
-                    } else if (clickCount == 2) {
-                        endPoint = e.latLng;
-
-                        var endMarker = createMarker(map, endPoint, "End");
-
-                        google.maps.event.addListener(endMarker, "dragend", function (e) {
-                            endPoint = e.latLng;
-
-                            draw();
-                        });
-
-                        draw();
-                    } else {
-                        infowindow.close();
-                    }
-
-                    clickCount++;
-                });
+                map.controls[google.maps.ControlPosition.TOP_RIGHT].push(irrigation.getElement());
             }
 
             google.maps.event.addDomListener(window, "load", initialize);
