@@ -6,6 +6,11 @@
         var $radiusUnitsInput = $("<select><option value='3.2808'>feet</options><option value='1'>meters</options></select>");
         var $radiusContainer = $("<div style='background-color:white;border-style:solid;border-width:2px;padding-left:4px;padding-right:4px'>Arm Length: </div>").append($radiusInput, $radiusUnitsInput);
 
+        var $directionClockwiseOption = $("<option>clockwise</option>").val(optmzr.IrrigationDirection.CLOCKWISE);
+        var $directionCounterClockwiseOption = $("<option>counter-clockwise</option>").val(optmzr.IrrigationDirection.COUNTER_CLOCKWISE);
+        var $directionInput = $("<select></select>").append($directionClockwiseOption, $directionCounterClockwiseOption);
+        var $directionContainer = $("<div style='background-color:white;border-style:solid;border-width:2px;padding-left:4px;padding-right:4px'>Direction: </div>").append($directionInput);
+
         var $centerLatInput = $("<input type='text' />");
         var $centerLngInput = $("<input type='text' />");
         var $centerContainer = $("<div style='background-color:white;border-style:solid;border-width:2px;padding-left:4px;padding-right:4px'>Center: </div>").append($centerLatInput, $centerLngInput);
@@ -18,17 +23,18 @@
 
         var $clearButton = $("<div style='background-color:white;border-style:solid;border-width:2px;cursor:pointer;text-align:center'><div style='font-family:Arial,sans-serif;font-size:12px;padding-left:4px;padding-right:4px;'>Clear Irrigation</div></div>");
 
-        var $control = $("<div style='padding:5px'></div>").append($radiusContainer, $centerContainer, $startBearingContainer, $endBearingContainer, $clearButton);
+        var $control = $("<div style='padding:5px'></div>").append($radiusContainer, $directionContainer, $centerContainer, $startBearingContainer, $endBearingContainer, $clearButton);
 
         this.getElement = function () {
             return $control[0];
         }
 
         var clickCount = 0;
+        var radius;
+        var direction = optmzr.IrrigationDirection.CLOCKWISE;
+        var centerMarker;
         var startMarker;
         var endMarker;
-        var centerMarker;
-        var radius;
         var arc;
         var infowindow = new google.maps.InfoWindow({
             size: new google.maps.Size(150, 50)
@@ -36,6 +42,12 @@
 
         $radiusContainer.change(function () {
             radius = parseFloat($radiusInput.val()) / parseFloat($radiusUnitsInput.val());
+
+            drawArc();
+        });
+
+        $directionInput.change(function () {
+            direction = parseInt($directionInput.val());
 
             drawArc();
         });
@@ -146,7 +158,7 @@
 
                         $endBearingInput.val(finalBearing);
 
-                        var arcPts = createArcVertices(center, initialBearing, finalBearing, useRadius, optmzr.IrrigationDirection.CLOCKWISE);
+                        var arcPts = createArcVertices(center, initialBearing, finalBearing, useRadius, direction);
 
                         if (arc) {
                             arc.setMap(null);
@@ -224,7 +236,7 @@
 
     optmzr.IrrigationDirection = {
         CLOCKWISE: 1,
-        COUNTER_CLOCKWISE: 1
+        COUNTER_CLOCKWISE: -1
     };
 
     return optmzr;
