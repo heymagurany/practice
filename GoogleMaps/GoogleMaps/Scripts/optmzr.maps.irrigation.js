@@ -1,6 +1,40 @@
 ﻿var optmzr = (function () {
     var optmzr = {};
 
+    function createArcVertices(center, initialBearing, finalBearing, radius, direction) {
+        var points = 32;
+        var extp = new Array();
+
+        if (initialBearing > finalBearing) {
+            if (direction > 0) {
+                finalBearing += 360;
+            }
+        } else {
+            if (direction < 0) {
+                finalBearing -= 360;
+            }
+        }
+
+        var deltaBearing = (finalBearing - initialBearing) / points;
+        var maxBearing = 5;
+
+        while ((deltaBearing < -maxBearing) || (deltaBearing > maxBearing)) {
+            points *= 2;
+            deltaBearing = (finalBearing - initialBearing) / points;
+        }
+
+        for (var i = 0; i <= points; i++) {
+            var point = google.maps.geometry.spherical.computeOffset(center, radius, initialBearing + i * deltaBearing);
+
+            extp.push(point);
+        }
+
+        extp.push(center);
+        extp.push(google.maps.geometry.spherical.computeOffset(center, radius, initialBearing));
+
+        return extp;
+    }
+
     function updateMarkerHeading(centerMarker, targetMarker, heading) {
         var centerPoint = centerMarker.getPosition();
         var startPoint = targetMarker.getPosition();
@@ -27,8 +61,10 @@
         var $startBearingInput = $("<input type='text' />");
         var $startBearingContainer = $("<div style='background-color:white;border-style:solid;border-width:2px;padding-left:4px;padding-right:4px'>Start Bearing: </div>").append($startBearingInput);
 
-        var $endBearingInput = $("<input type='text' />");
-        var $endBearingContainer = $("<div style='background-color:white;border-style:solid;border-width:2px;padding-left:4px;padding-right:4px'>End Bearing: </div>").append($endBearingInput);
+        var $endBearingOn = $("<a href='#'>Specify End Bearing</a>");
+        var $endBearingInput = $("<input type='text' />").hide();
+        var $endBearingOff = $("<a href='#'>Nevermind</a>").hide();
+        var $endBearingContainer = $("<div style='background-color:white;border-style:solid;border-width:2px;padding-left:4px;padding-right:4px'>End Bearing: </div>").append($endBearingOn, $endBearingInput, $endBearingOff);
 
         var $clearButton = $("<div style='background-color:white;border-style:solid;border-width:2px;cursor:pointer;text-align:center'><div style='font-family:Arial,sans-serif;font-size:12px;padding-left:4px;padding-right:4px;'>Clear Irrigation</div></div>");
 
@@ -43,8 +79,16 @@
         var direction = optmzr.IrrigationDirection.CLOCKWISE;
         var centerMarker;
         var startMarker;
+        var endEnabled = false;
         var endMarker;
         var arc;
+        var shapeOptions = {
+            strokeColor: "#0000FF",
+            strokeOpacity: 0.5,
+            strokeWeight: 2,
+            fillColor: "#0000FF",
+            fillOpacity: 0.35
+        };
         var infowindow = new google.maps.InfoWindow({
             size: new google.maps.Size(150, 50)
         });
@@ -52,13 +96,13 @@
         $radiusContainer.change(function () {
             radius = parseFloat($radiusInput.val()) / parseFloat($radiusUnitsInput.val());
 
-            drawArc();
+            draw();
         });
 
         $directionInput.change(function () {
             direction = parseInt($directionInput.val());
 
-            drawArc();
+            draw();
         });
 
         $centerLatInput.change(function () {
@@ -77,15 +121,37 @@
             updateMarkerHeading(centerMarker, startMarker, heading);
         });
 
+        $endBearingOn.click(function () {
+            endEnabled = true;
+            $endBearingOn.hide();
+            $endBearingInput.show();
+            $endBearingOff.show();
+        });
+
         $endBearingInput.change(function () {
             var heading = parseFloat($endBearingInput.val());
 
             updateMarkerHeading(centerMarker, endMarker, heading);
         });
 
+        $endBearingOff.click(function () {
+            endEnabled = false;
+            clickCount--;
+
+            if(endMarker) {
+                endMarker.setMap(null);
+                endMarker = null;
+            }
+
+            draw();
+
+            $endBearingOn.show();
+            $endBearingInput.val("").hide();
+            $endBearingOff.hide();
+        });
+
         var createMarker = function (latlng, html) {
-            var contentString = html;
-            var marker = new google.maps.Marker({ 
+            var marker = new google.maps.Marker({
                 draggable: true,
                 position: latlng,
                 map: map,
@@ -93,50 +159,16 @@
             });
 
             google.maps.event.addListener(marker, 'click', function () {
-                infowindow.setContent(contentString);
+                infowindow.setContent(html);
                 infowindow.open(map, marker);
             });
 
-            google.maps.event.addListener(marker, "position_changed", drawArc);
+            google.maps.event.addListener(marker, "position_changed", draw);
 
             return marker;
         }
 
-        var createArcVertices = function (center, initialBearing, finalBearing, radius, direction) {
-            var points = 32;
-            var extp = new Array();
-
-            if (initialBearing > finalBearing) {
-                if (direction > 0) {
-                    finalBearing += 360;
-                }
-            } else {
-                if (direction < 0) {
-                    finalBearing -= 360;
-                }
-            }
-
-            var deltaBearing = (finalBearing - initialBearing) / points;
-            var maxBearing = 5;
-
-            while ((deltaBearing < -maxBearing) || (deltaBearing > maxBearing)) {
-                points *= 2;
-                deltaBearing = (finalBearing - initialBearing) / points;
-            }
-
-            for (var i = 0; i <= points; i++) {
-                var point = google.maps.geometry.spherical.computeOffset(center, radius, initialBearing + i * deltaBearing);
-
-                extp.push(point);
-            }
-
-            extp.push(center);
-            extp.push(google.maps.geometry.spherical.computeOffset(center, radius, initialBearing));
-
-            return extp;
-        }
-
-        var drawArc = function () {
+        var draw = function () {
             if (centerMarker) {
                 var center = centerMarker.getPosition();
 
@@ -171,66 +203,90 @@
 
                         var arcPts = createArcVertices(center, initialBearing, finalBearing, useRadius, direction);
 
-                        if (arc) {
-                            arc.setMap(null);
+                        if (arc instanceof google.maps.Polygon) {
+                            arc.setPath(arcPts);
+                        } else {
+                            if (arc) {
+                                arc.setMap(null);
+                            }
+
+                            arc = new google.maps.Polygon($.extend(shapeOptions, {
+                                paths: [arcPts],
+                                map: map
+                            }));
                         }
 
-                        arc = new google.maps.Polygon({
-                            paths: [arcPts],
-                            strokeColor: "#0000FF",
-                            strokeOpacity: 0.5,
-                            strokeWeight: 2,
-                            fillColor: "#0000FF",
-                            fillOpacity: 0.35,
-                            map: map
-                        });
                     } else {
                         if (radius) {
                             useRadius = radius;
                         } else {
                             useRadius = google.maps.geometry.spherical.computeDistanceBetween(center, start);
                         }
+
+                        if (arc instanceof google.maps.Circle) {
+                            arc.setCenter(center);
+                            arc.setRadius(useRadius);
+                        } else {
+                            if (arc) {
+                                arc.setMap(null);
+                            }
+
+                            arc = new google.maps.Circle($.extend(shapeOptions, {
+                                center: center,
+                                radius: useRadius,
+                                map: map
+                            }));
+                        }
                     }
 
                     $radiusInput.val(useRadius * parseFloat($radiusUnitsInput.val()));
                 }
             }
-
-            return arc;
         }
 
         google.maps.event.addListener(map, "click", function (e) {
             if (clickCount == 0) {
+                clickCount++;
                 centerMarker = createMarker(e.latLng, "Center");
             } else if (clickCount == 1) {
+                clickCount++;
                 startMarker = createMarker(e.latLng, "Start");
-            } else if (clickCount == 2) {
-                endMarker = createMarker(e.latLng, "End");
-                arc = drawArc();
+                draw();
             } else {
-                infowindow.close();
+                if (endEnabled && (clickCount == 2)) {
+                    clickCount++;
+                    endMarker = createMarker(e.latLng, "End");
+                    draw();
+                }
             }
 
-            clickCount++;
+            infowindow.close();
         });
 
         google.maps.event.addDomListener($clearButton[0], "click", function () {
-            var objects = [
-                arc,
-                startMarker,
-                endMarker,
-                centerMarker
-            ];
+            if(arc) {
+                arc.setMap(null);
+                arc = null;
+            }
 
-            for (var i = 0; i < objects.length; i++) {
-                if (objects[i]) {
-                    objects[i].set("map", null);
-                }
+            if (startMarker) {
+                startMarker.setMap(null);
+                startMarker = null;
+            }
+
+            if (endMarker) {
+                endMarker.setMap(null);
+                endMarker = null;
+            }
+
+            if (centerMarker) {
+                centerMarker.setMap(null);
+                centerMarker = null;
             }
 
             clickCount = 0;
 
-            $radiusUnitsInput.val("");
+            $radiusInput.val("");
             $centerLatInput.val("");
             $centerLngInput.val("");
             $startBearingInput.val("");
