@@ -1,6 +1,15 @@
 ﻿var optmzr = (function () {
     var optmzr = {};
 
+    function updateMarkerHeading(centerMarker, targetMarker, heading) {
+        var centerPoint = centerMarker.getPosition();
+        var startPoint = targetMarker.getPosition();
+        var distance = google.maps.geometry.spherical.computeDistanceBetween(centerPoint, startPoint);
+        var destinationPoint = google.maps.geometry.spherical.computeOffset(centerPoint, distance, heading);
+
+        targetMarker.setPosition(destinationPoint);
+    }
+
     optmzr.IrrigationControl = function (map) {
         var $radiusInput = $("<input type='text' />");
         var $radiusUnitsInput = $("<select><option value='3.2808'>feet</options><option value='1'>meters</options></select>");
@@ -63,31 +72,33 @@
         });
 
         $startBearingInput.change(function () {
-            if (startMarker) {
-                startMarker.setMap(null);
-            }
-            var bearing = centerMarker.getPosition().Bearing(startMarker.getPosition());
+            var heading = parseFloat($startBearingInput.val());
 
+            updateMarkerHeading(centerMarker, startMarker, heading);
         });
 
         $endBearingInput.change(function () {
-            if (endMarker) {
-                endMarker.setMap(null);
-            }
+            var heading = parseFloat($endBearingInput.val());
+
+            updateMarkerHeading(centerMarker, endMarker, heading);
         });
 
         var createMarker = function (latlng, html) {
             var contentString = html;
-            var marker = new google.maps.Marker({
+            var marker = new google.maps.Marker({ 
                 draggable: true,
                 position: latlng,
                 map: map,
                 zIndex: Math.round(latlng.lat() * -100000) << 5
             });
+
             google.maps.event.addListener(marker, 'click', function () {
                 infowindow.setContent(contentString);
                 infowindow.open(map, marker);
             });
+
+            google.maps.event.addListener(marker, "position_changed", drawArc);
+
             return marker;
         }
 
@@ -114,13 +125,13 @@
             }
 
             for (var i = 0; i <= points; i++) {
-                var point = center.DestinationPoint(initialBearing + i * deltaBearing, radius);
+                var point = google.maps.geometry.spherical.computeOffset(center, radius, initialBearing + i * deltaBearing);
 
                 extp.push(point);
             }
 
             extp.push(center);
-            extp.push(center.DestinationPoint(initialBearing, radius));
+            extp.push(google.maps.geometry.spherical.computeOffset(center, radius, initialBearing));
 
             return extp;
         }
@@ -134,20 +145,20 @@
 
                 if (startMarker) {
                     var start = startMarker.getPosition();
-                    var initialBearing = center.Bearing(start);
+                    var initialBearing = google.maps.geometry.spherical.computeHeading(center, start);
                     var useRadius;
 
                     $startBearingInput.val(initialBearing);
 
                     if (endMarker) {
                         var end = endMarker.getPosition();
-                        var finalBearing = center.Bearing(end);
+                        var finalBearing = google.maps.geometry.spherical.computeHeading(center, end);
 
                         if (radius) {
                             useRadius = radius;
                         } else {
-                            var distanceFromStart = center.distanceFrom(start);
-                            var distanceFromEnd = center.distanceFrom(end);
+                            var distanceFromStart = google.maps.geometry.spherical.computeDistanceBetween(center, start);
+                            var distanceFromEnd = google.maps.geometry.spherical.computeDistanceBetween(center, end);
 
                             if (distanceFromStart > distanceFromEnd) {
                                 useRadius = distanceFromStart;
@@ -177,7 +188,7 @@
                         if (radius) {
                             useRadius = radius;
                         } else {
-                            useRadius = center.distanceFrom(start);
+                            useRadius = google.maps.geometry.spherical.computeDistanceBetween(center, start);
                         }
                     }
 
@@ -191,17 +202,10 @@
         google.maps.event.addListener(map, "click", function (e) {
             if (clickCount == 0) {
                 centerMarker = createMarker(e.latLng, "Center");
-
-                google.maps.event.addListener(centerMarker, "position_changed", drawArc);
             } else if (clickCount == 1) {
                 startMarker = createMarker(e.latLng, "Start");
-
-                google.maps.event.addListener(startMarker, "position_changed", drawArc);
             } else if (clickCount == 2) {
                 endMarker = createMarker(e.latLng, "End");
-
-                google.maps.event.addListener(endMarker, "position_changed", drawArc);
-
                 arc = drawArc();
             } else {
                 infowindow.close();
