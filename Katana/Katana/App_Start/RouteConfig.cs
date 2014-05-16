@@ -12,7 +12,7 @@ namespace Katana
             routes.MapRoute(
                 "Default",
                 "{controller}/{action}/{id}",
-                new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                new { controller = "oauth", action = "authorize", id = UrlParameter.Optional }
             );
         }
     }

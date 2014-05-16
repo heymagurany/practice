@@ -18,11 +18,11 @@ namespace Katana.Controllers
         [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult LogIn(string returnUrl, FormCollection form)
+        public ActionResult LogIn(string returnUrl, string username, string password)
         {
             var authentication = HttpContext.GetOwinContext().Authentication;
 
-            if (!string.IsNullOrEmpty(form["username"]) && !string.IsNullOrEmpty(form["password"]))
+            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
             {
                 var isPersistent = !string.IsNullOrEmpty(Request.Form.Get("isPersistent"));
 
@@ -34,8 +34,8 @@ namespace Katana.Controllers
                     new ClaimsIdentity(new[]
                     {
                         new Claim(ClaimTypes.NameIdentifier, "AUniqueID"),
-                        new Claim("http://schemas.microsoft.com/accesscontrolservice/2010/07/claims/identityprovider", "AUniqueID"),
-                        new Claim(ClaimsIdentity.DefaultNameClaimType, form["username"])
+                        new Claim("http://schemas.microsoft.com/accesscontrolservice/2010/07/claims/identityprovider", "MeMyselfAndI"),
+                        new Claim(ClaimsIdentity.DefaultNameClaimType, password)
                     }, DefaultAuthenticationTypes.ApplicationCookie));
 
                 return Redirect(returnUrl);
@@ -46,6 +46,9 @@ namespace Katana.Controllers
 
         public ActionResult LogOut()
         {
+            var authentication = HttpContext.GetOwinContext().Authentication;
+            authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie, "Bearer");
+
             return RedirectToAction("login");
         }
     }

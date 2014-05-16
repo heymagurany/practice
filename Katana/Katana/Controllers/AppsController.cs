@@ -8,6 +8,13 @@ namespace Katana.Controllers
     [Authorize]
     public class AppsController : Controller
     {
+        private readonly AppManagerService m_AppManager;
+
+        internal AppsController(AppManagerService appManager)
+        {
+            m_AppManager = appManager;
+        }
+
         [HttpGet]
         public ActionResult Register()
         {
@@ -22,10 +29,7 @@ namespace Katana.Controllers
             model.ClientId = Guid.NewGuid().ToString("N");
             model.ClientSecret = Guid.NewGuid().ToString("N");
 
-            var apps = Session.GetRegisteredApps();
-            apps.Add(model);
-
-            Session.SaveRegisteredApps(apps);
+            m_AppManager.RegisterApp(model);
 
             return View("Details", model);
         }
@@ -41,7 +45,7 @@ namespace Katana.Controllers
         [HttpGet]
         public ActionResult Delete(string id)
         {
-            var model = Session.GetRegisteredApps().FirstOrDefault(app => StringComparer.OrdinalIgnoreCase.Equals(id, app.ClientId));
+            var model = m_AppManager.GetApps().FirstOrDefault(app => StringComparer.OrdinalIgnoreCase.Equals(id, app.ClientId));
 
             if(model == null)
             {
@@ -56,10 +60,7 @@ namespace Katana.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(AppModel model)
         {
-            var apps = Session.GetRegisteredApps();
-            apps.Remove(model);
-            
-            Session.SaveRegisteredApps(apps);
+            m_AppManager.DeleteApp(model.ClientId);
 
             return RedirectToAction("index");
         }
@@ -67,7 +68,7 @@ namespace Katana.Controllers
         [HttpGet]
         public ActionResult Edit(string id)
         {
-            var model = Session.GetRegisteredApps().FirstOrDefault(app => StringComparer.OrdinalIgnoreCase.Equals(id, app.ClientId));
+            var model = m_AppManager.GetApps().FirstOrDefault(app => StringComparer.OrdinalIgnoreCase.Equals(id, app.ClientId));
 
             if (model == null)
             {
@@ -82,12 +83,7 @@ namespace Katana.Controllers
         [ValidateInput(true)]
         public ActionResult Edit(AppModel model)
         {
-            var apps = Session.GetRegisteredApps();
-            var index = apps.IndexOf(model);
-
-            apps[index] = model;
-
-            Session.SaveRegisteredApps(apps);
+            m_AppManager.EditApp(model);
             
             return RedirectToAction("index");
         }
@@ -95,7 +91,7 @@ namespace Katana.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            var model = Session.GetRegisteredApps();
+            var model = m_AppManager.GetApps();
 
             return View(model);
         }

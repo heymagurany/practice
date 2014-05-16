@@ -10,9 +10,16 @@ namespace Katana
 {
     public class Startup
     {
+        internal static readonly AppManagerService AppManager = new AppManagerService();
+
         public void Configuration(IAppBuilder app)
         {
+            //var appManager = new AppManagerService();
+
+            app.Properties.Add("Katana.AppManagerService", AppManager);
+
             ConfigureAuthentication(app);
+            ConfigureAuthorizationServer(app);
         }
 
         private void ConfigureAuthentication(IAppBuilder app)
@@ -37,28 +44,12 @@ namespace Katana
 #if DEBUG
                 AllowInsecureHttp = true,
 #endif
-                //// Authorization server provider which controls the lifecycle of Authorization Server
-                //Provider = new OAuthAuthorizationServerProvider
-                //{
-                //    OnValidateClientRedirectUri = ValidateClientRedirectUri,
-                //    OnValidateClientAuthentication = ValidateClientAuthentication,
-                //    OnGrantResourceOwnerCredentials = GrantResourceOwnerCredentials,
-                //    OnGrantClientCredentials = GrantClientCredetails
-                //},
-
-                //// Authorization code provider which creates and receives the authorization code.
-                //AuthorizationCodeProvider = new AuthenticationTokenProvider
-                //{
-                //    OnCreate = CreateAuthenticationCode,
-                //    OnReceive = ReceiveAuthenticationCode,
-                //},
-
-                //// Refresh token provider which creates and receives refresh token.
-                //RefreshTokenProvider = new AuthenticationTokenProvider
-                //{
-                //    OnCreate = CreateRefreshToken,
-                //    OnReceive = ReceiveRefreshToken,
-                //}
+                // Authorization server provider which controls the lifecycle of Authorization Server
+                Provider = new AuthorizationServerProvider(AppManager),
+                // Authorization code provider which creates and receives the authorization code.
+                AuthorizationCodeProvider = new AuthorizationCodeProvider(),
+                // Refresh token provider which creates and receives refresh token.
+                RefreshTokenProvider = new RefreshTokenProvider()
             });
         }
 

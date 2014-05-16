@@ -1,7 +1,14 @@
-﻿
+﻿@model AppModel
 @{
-    ViewBag.Title = "Authorize";
+    ViewBag.Title = "Authorize " + Model.Name;
 }
 
-<h2>Authorize</h2>
-
+<h2>Authorize @Model.Name</h2>
+<p>@Model.Name wants access data on your behalf.</p>
+@using(Html.BeginForm())
+{
+    <div>
+        <button type="submit" name="accept" value="true">Accept</button>
+        <button type="submit" name="accept" value="false">Deny</button>
+    </div>
+}
