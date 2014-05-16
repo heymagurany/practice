@@ -1,6 +1,6 @@
 ﻿@model AppModel
 <div>
-    <h4>AppModel</h4>
+    <h4>Registered App</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -20,6 +20,14 @@
         </dd>
 
         <dt>
+            @Html.DisplayNameFor(model => model.RedirectUri)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RedirectUri)
+        </dd>
+
+        <dt>
             @Html.DisplayNameFor(model => model.ClientId)
         </dt>
 
@@ -33,14 +41,6 @@
 
         <dd>
             @Html.DisplayFor(model => model.ClientSecret)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.RedirectUri)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.RedirectUri)
         </dd>
 
     </dl>
