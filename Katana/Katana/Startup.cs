@@ -20,7 +20,8 @@ namespace Katana
             app.Properties.Add("Katana.AppManagerService", AppManager);
 
             ConfigureAuthentication(app);
-            ConfigureAuthorizationServer(app);
+            ConfigureOAuth(app);
+            ConfigureWebApi(app);
         }
 
         private void ConfigureAuthentication(IAppBuilder app)
@@ -34,10 +35,10 @@ namespace Katana
             });
         }
 
-        private void ConfigureAuthorizationServer(IAppBuilder app)
+        private void ConfigureOAuth(IAppBuilder app)
         {
             // Setup Authorization Server
-            app.UseOAuthAuthorizationServer(new OAuthAuthorizationServerOptions
+            app.UseOAuthBearerTokens(new OAuthAuthorizationServerOptions
             {
                 AccessTokenExpireTimeSpan = TimeSpan.FromDays(365),
                 AuthorizeEndpointPath = new PathString("/oauth/authorize"),
@@ -55,15 +56,13 @@ namespace Katana
             });
         }
 
-        private void ConfigureResourceServer(IAppBuilder app)
-        {
-            app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
-        }
-
         private void ConfigureWebApi(IAppBuilder app)
         {
-            var config = new HttpConfiguration();
-            config.SuppressDefaultHostAuthentication();
+            var config = new HttpConfiguration()
+            {
+                
+            };
+            //config.SuppressDefaultHostAuthentication();
             config.Filters.Add(new HostAuthenticationFilter(OAuthDefaults.AuthenticationType));
             config.Routes.MapHttpRoute(
                 "DefaultApi",
