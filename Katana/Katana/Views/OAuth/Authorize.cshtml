@@ -7,6 +7,7 @@
 <p>@Model.Name wants access data on your behalf.</p>
 @using(Html.BeginForm())
 {
+    @Html.AntiForgeryToken()
     <div>
         <button type="submit" name="accept" value="true">Accept</button>
         <button type="submit" name="accept" value="false">Deny</button>

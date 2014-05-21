@@ -5,6 +5,7 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Owin;
 using Microsoft.Owin.Security.OAuth;
+using System;
 
 namespace Katana
 {
@@ -38,8 +39,9 @@ namespace Katana
             // Setup Authorization Server
             app.UseOAuthAuthorizationServer(new OAuthAuthorizationServerOptions
             {
+                AccessTokenExpireTimeSpan = TimeSpan.FromDays(365),
                 AuthorizeEndpointPath = new PathString("/oauth/authorize"),
-                TokenEndpointPath = new PathString("/oauth/request_token"),
+                TokenEndpointPath = new PathString("/oauth/token"),
                 ApplicationCanDisplayErrors = true,
 #if DEBUG
                 AllowInsecureHttp = true,
@@ -49,7 +51,7 @@ namespace Katana
                 // Authorization code provider which creates and receives the authorization code.
                 AuthorizationCodeProvider = new AuthorizationCodeProvider(),
                 // Refresh token provider which creates and receives refresh token.
-                RefreshTokenProvider = new RefreshTokenProvider()
+                RefreshTokenProvider = new AuthorizationCodeProvider()
             });
         }
 

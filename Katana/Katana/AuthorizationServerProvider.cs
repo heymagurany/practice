@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Owin.Security.OAuth;
 
 namespace Katana
 {
-    internal sealed class AuthorizationServerProvider : IOAuthAuthorizationServerProvider
+    internal sealed class AuthorizationServerProvider : OAuthAuthorizationServerProvider
     {
         private readonly AppManagerService m_AppManager;
 
@@ -14,12 +16,28 @@ namespace Katana
             m_AppManager = appManager;
         }
 
-        public Task MatchEndpoint(OAuthMatchEndpointContext context)
+        private static ClaimsIdentity CreateOAuthIdentity(string name, IEnumerable<string> scope)
         {
-            return Task.FromResult(true);
+            Claim[] claims =
+            {
+                new Claim(ClaimsIdentity.DefaultNameClaimType, name)
+            };
+            var identity = new ClaimsIdentity(claims, OAuthDefaults.AuthenticationType, ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+
+            foreach(var singleScope in scope)
+            {
+                var singleScopeTrimmed = singleScope.Trim();
+
+                if(!string.IsNullOrEmpty(singleScopeTrimmed))
+                {
+                    identity.AddClaim(new Claim("urn:oauth:scope", singleScopeTrimmed));
+                }
+            }
+
+            return identity;
         }
 
-        public Task ValidateClientRedirectUri(OAuthValidateClientRedirectUriContext context)
+        public override Task ValidateClientRedirectUri(OAuthValidateClientRedirectUriContext context)
         {
             var app = m_AppManager.GetApps().FirstOrDefault(a => StringComparer.OrdinalIgnoreCase.Equals(context.ClientId, a.ClientId));
 
@@ -28,10 +46,10 @@ namespace Katana
                 context.Validated(app.RedirectUri);
             }
 
-            return Task.FromResult(true);
+            return base.ValidateClientRedirectUri(context);
         }
 
-        public Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
+        public override Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
         {
             string clientId;
             string clientSecret;
@@ -40,75 +58,41 @@ namespace Katana
             {
                 var app = m_AppManager.GetApps().FirstOrDefault(a => StringComparer.OrdinalIgnoreCase.Equals(clientId, a.ClientId) && StringComparer.OrdinalIgnoreCase.Equals(clientSecret, a.ClientSecret));
 
-                if (app != null)
+                if(app != null)
                 {
                     context.Validated(app.ClientId);
                 }
             }
 
-            return Task.FromResult(true);
+            return base.ValidateClientAuthentication(context);
         }
 
-        public Task ValidateAuthorizeRequest(OAuthValidateAuthorizeRequestContext context)
+        public override Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
-            var app = m_AppManager.GetApps().FirstOrDefault(a => StringComparer.OrdinalIgnoreCase.Equals(context.ClientContext.ClientId, a.ClientId));
-
-            if (app != null)
+            if(StringComparer.OrdinalIgnoreCase.Equals("client", context.UserName) && StringComparer.Ordinal.Equals("password", context.Password))
             {
-                context.Validated();
+                var identity = CreateOAuthIdentity("client", context.Scope);
+
+                context.Validated(identity);
             }
 
-            return Task.FromResult(true);
+            return base.GrantResourceOwnerCredentials(context);
         }
 
-        public Task ValidateTokenRequest(OAuthValidateTokenRequestContext context)
+        public override Task GrantClientCredentials(OAuthGrantClientCredentialsContext context)
         {
-            context.Validated();
+            var identity = CreateOAuthIdentity(context.ClientId, context.Scope);
 
-            return Task.FromResult(true);
+            context.Validated(identity);
+
+            return base.GrantClientCredentials(context);
         }
 
-        public Task GrantAuthorizationCode(OAuthGrantAuthorizationCodeContext context)
+        public override Task TokenEndpoint(OAuthTokenEndpointContext context)
         {
-            context.Validated(context.Ticket);
+            context.Properties.ExpiresUtc = DateTime.MaxValue;
 
-            return Task.FromResult(true);
-        }
-
-        public Task GrantRefreshToken(OAuthGrantRefreshTokenContext context)
-        {
-            context.Validated(context.Ticket);
-
-            return Task.FromResult(true);
-        }
-
-        public Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
-        {
-            context.Validated(context.Ticket);
-
-            return Task.FromResult(true);
-        }
-
-        public Task GrantClientCredentials(OAuthGrantClientCredentialsContext context)
-        {
-            context.Validated(context.Ticket);
-
-            return Task.FromResult(true);
-        }
-
-        public Task GrantCustomExtension(OAuthGrantCustomExtensionContext context)
-        {
-            throw new NotSupportedException();
-        }
-
-        public Task AuthorizeEndpoint(OAuthAuthorizeEndpointContext context)
-        {
-            return Task.FromResult(true);
-        }
-
-        public Task TokenEndpoint(OAuthTokenEndpointContext context)
-        {
-            return Task.FromResult(true);
+            return base.TokenEndpoint(context);
         }
     }
 }

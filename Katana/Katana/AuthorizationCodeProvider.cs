@@ -13,10 +13,9 @@ namespace Katana
         public void Create(AuthenticationTokenCreateContext context)
         {
             var key = GenerateCode();
+            var value = context.SerializeTicket();
 
             context.SetToken(key);
-
-            var value = context.SerializeTicket();
 
             if(m_Codes.ContainsKey(key))
             {
@@ -30,11 +29,8 @@ namespace Katana
 
         public Task CreateAsync(AuthenticationTokenCreateContext context)
         {
-            Create(context);
-
-            return Task.FromResult(true);
+            return Task.Run(() => Create(context));
         }
-
 
         private static string GenerateCode()
         {
@@ -55,9 +51,7 @@ namespace Katana
 
         public Task ReceiveAsync(AuthenticationTokenReceiveContext context)
         {
-            Receive(context);
-
-            return Task.FromResult(00);
+            return Task.Run(() => Receive(context));
         }
     }
 }

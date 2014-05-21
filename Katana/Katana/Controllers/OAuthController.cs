@@ -20,33 +20,26 @@ namespace Katana.Controllers
             m_AppManager = appManager;
         }
 
-        [ActionName("access_token")]
         [HttpGet]
-        public ActionResult AccessToken()
+        public ActionResult Authorize(string client_id, string scope)
         {
-            throw new NotImplementedException();
-        }
-
-        public ActionResult Authenticate(string client_id, string response_type, string redirect_uri, string scope, string state)
-        {
-            // If the user already authorized the client (and the set of scopes), just redirect to the <redirect_uri>, otherwise show the authorize view.
-            return View("Authorize");
-        }
-
-        [HttpGet]
-        public ActionResult Authorize(string client_id)
-        {
-            var app = m_AppManager.GetApps().FirstOrDefault(a => StringComparer.OrdinalIgnoreCase.Equals(client_id, a.ClientId));
-
-            if (app == null)
+            if(Response.StatusCode == 200)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                var app = m_AppManager.GetApps().FirstOrDefault(a => StringComparer.OrdinalIgnoreCase.Equals(client_id, a.ClientId));
+
+                if(app == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+
+                return View(app);
             }
 
-            return View(app);
+            return new HttpStatusCodeResult(Response.StatusCode);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public void Authorize(string scope, bool accept)
         {
             if (accept)
@@ -56,7 +49,7 @@ namespace Katana.Controllers
 
                 if (!string.IsNullOrWhiteSpace(scope))
                 {
-                    string[] scopes = scope.Split(',', ' ');
+                    string[] scopes = scope.Split(' ');
 
                     foreach (var singleScope in scopes)
                     {
