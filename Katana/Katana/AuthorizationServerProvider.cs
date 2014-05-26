@@ -87,12 +87,5 @@ namespace Katana
 
             return base.GrantClientCredentials(context);
         }
-
-        public override Task TokenEndpoint(OAuthTokenEndpointContext context)
-        {
-            context.Properties.ExpiresUtc = DateTime.MaxValue;
-
-            return base.TokenEndpoint(context);
-        }
     }
 }

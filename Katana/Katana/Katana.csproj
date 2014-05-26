@@ -154,7 +154,6 @@
   <ItemGroup>
     <Compile Include="AppManagerService.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="AuthorizationCodeManagerService.cs" />
     <Compile Include="AuthorizationCodeProvider.cs" />
     <Compile Include="AuthorizationServerProvider.cs" />
     <Compile Include="Constants.cs" />
