@@ -1,0 +1,37 @@
+﻿@model WebUI.Models.CommanderUser
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Commander Client Demo Web Application</h1>
+    <p class="lead">This is a demonstration of how Commander authorizes web applications for API access. The authorization token will be destroyed at the end of your session.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <p class="alert alert-danger alert-dismissable" role="alert">
+                <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                @ViewBag.ErrorMessage
+            </p>
+        }
+        @if (Model == null)
+        {
+            <h2>Getting started</h2>
+            <p>
+                Connect to Commander to see the UI flow and to see some information about your Commander user account.
+            </p>
+            <p><a class="btn btn-default" href="@ViewBag.CommanderAuthUrl">Connect To Commander &raquo;</a></p>
+        }
+        else
+        {
+            <h2>Your Commader User</h2>
+            <p>
+                <a href="mailto:@Model.Email">@Model.FirstName @Model.LastName (@Model.Email)</a>
+            </p>
+            <p>@Html.ActionLink("Start Over", "Reset", null, new { @class = "btn btn-default" })</p>
+        }
+    </div>
+</div>
