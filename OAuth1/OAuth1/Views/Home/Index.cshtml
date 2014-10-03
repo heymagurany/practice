@@ -17,5 +17,13 @@
         <p>
             @Html.ActionLink("Connect", "Connect")
         </p>
+        <p>
+            @using (Html.BeginForm("BroadcastFile", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.Label("rxfile", "Upload File")<br />
+                @Html.TextBox("rxfile", null, new { type = "file" })<br />
+                <button type="submit">Upload</button>
+            }
+        </p>
     </div>
 </div>
