@@ -28,6 +28,7 @@ module.exports = function () {
       current.next = new Node(current.next, data);
     }
   };
+  //Find/contains
   this.find = function (data) {
     var current = head;
     while (current && current.data !== data) {

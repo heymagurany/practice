@@ -2,10 +2,10 @@ var LinkedList = require('./linked-list.js');
 var CircularLinkedList = require('./circular-linked-list.js');
 
 console.log('Linked List')
-console.log('===========')
+console.log('===========');
+var list = new LinkedList();
 
 // Insert
-var list = new LinkedList();
 list.insert(1);
 list.insert(3);
 list.insert(2);
@@ -29,11 +29,30 @@ console.log(list.remove(3));
 console.log(list.remove(1));
 console.log(list.toString());
 
-console.log('Linked List')
-console.log('===========')
-
+console.log('Circular Linked List')
+console.log('===========');
 var circular = new CircularLinkedList();
+
+// Insert
 circular.insert(1);
 circular.insert(3);
 circular.insert(2);
+console.log(circular.toString());
+
+// Insert sorted
+var circularSorted = new CircularLinkedList();
+circularSorted.insert_sorted(2);
+circularSorted.insert_sorted(1);
+circularSorted.insert_sorted(4);
+circularSorted.insert_sorted(3);
+console.log(circularSorted.toString());
+
+// Find
+console.log(circular.find(3));
+console.log(circular.find(4));
+
+// Remove
+console.log(circular.remove(3));
+console.log(circular.remove(3));
+console.log(circular.remove(1));
 console.log(circular.toString());

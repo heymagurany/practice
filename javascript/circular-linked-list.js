@@ -27,38 +27,62 @@ module.exports = function () {
   };
   // Inserts sorted.
   this.insert_sorted = function (data) {
-    if (!head || head.data > data) {
+    if (!head) {
       head = new Node(head, data);
+      head.next = head;
+    }
+    else if (head.data > data) {
+      head.next = new Node(head.next, head.data);
+      head.data = data;
     }
     else {
       var current = head;
-      while (current.next && current.next.data < data) {
+      while (current.next != head && current.next.data < data) {
         current = current.next;
       }
       current.next = new Node(current.next, data);
     }
   };
+  // Find/contains
   this.find = function (data) {
     var current = head;
     while (current && current.data !== data) {
       current = current.next;
+      if (current == head) {
+        return false;
+      }
     }
-    return current != null;
+    return true;
   };
   // Remove
   this.remove = function (data) {
     if (head) {
+      var remove;
       if (head.data === data) {
-        head = head.next;
-        return true;
+        remove = head;
       }
-      var current = head;
-      while (current.next) {
-        if (current.next.data === data) {
-          current.next = current.next.next;
-          return true;
+      else {
+        var current = head.next;
+        while (!remove && current != head) {
+          if (current.data === data) {
+            remove = current;
+          }
+          else {
+            current = current.next;
+          }
         }
-        current = current.next;
+      }
+      if (remove) {
+        if (remove.next == remove) {
+          head = null;
+        }
+        else {
+          var next = remove.next;
+          remove.data = next.data;
+          remove.next = next.next;
+          head = remove;
+        }
+        return true;
       }
     }
     return false;
