@@ -9,7 +9,7 @@ function Node(arg0, arg1) {
   };
 }
 
-module.exports = function () {
+module.exports = function LinkedList() {
   var head = null;
   // Inserts a new node at the head of the list
   this.insert = function (data) {
@@ -53,6 +53,63 @@ module.exports = function () {
       }
     }
     return false;
+  };
+  // Remove all
+  this.removeAll = function (data) {
+    while (head && head.data === data) {
+      head = head.next;
+    }
+    var current = head;
+    while (current) {
+      while (current.next && current.next.data === data) {
+        current.next = current.next.next;
+      }
+      current = current.next;
+    }
+  }
+  // Find midpoint
+  this.mid = function () {
+    if (!head) {
+      return null;
+    }
+    var trailing = head;
+    var leading = head;
+    while (leading) {
+      leading = leading.next;
+      if (leading) {
+        leading = leading.next;
+        trailing = trailing.next;
+      }
+    }
+    return trailing.data;
+  };
+  // Find kth from end
+  this.fromEnd = function(k) {
+    if (!head) {
+      return null;
+    }
+    var leading = head;
+    while (k-- && leading) {
+      leading = leading.next;
+    }
+    var trailing = head;
+    while (leading) {
+      leading = leading.next;
+      trailing = trailing.next;
+    }
+    return trailing.data;
+  };
+  // Reverse
+  this.reverse = function () {
+    var prev;
+    var current = head;
+    while (current) {
+      var next = current.next;
+      current.next = prev;
+      prev = current;
+      current = next;
+    }
+    head = prev;
   };
   // For testing
   this.toString = function () {
