@@ -14,6 +14,11 @@ module.exports = function LinkedList() {
   // Inserts a new node at the head of the list
   this.insert = function (data) {
     head = new Node(head, data);
+    return head;
+  };
+  this.insertNode = function (node) {
+    head = node;
+    return head;
   };
   // Inserts sorted.
   this.insert_sorted = function (data) {
@@ -128,6 +133,22 @@ module.exports = function LinkedList() {
       current = current.next;
     }
     return true;
+  };
+  // Detect Loop
+  this.detectLoop = function () {
+    var leading = head;
+    var trailing = head;
+    while (leading) {
+      leading = leading.next;
+      if (leading == trailing) {
+        return true;
+      }
+      if (leading) {
+        leading = leading.next;
+        trailing = trailing.next;
+      }
+    }
+    return false;
   };
   // For testing
   this.toString = function () {

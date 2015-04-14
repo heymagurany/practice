@@ -77,6 +77,17 @@ p3.insert(2);
 p3.insert(1);
 console.log('Is Palindrome 1,2,3,2,1: ' + p3.isPalindrome());
 
+// Detect Loop
+var l = new LinkedList();
+var node1 = l.insert(1);
+l.insert(4);
+var node2 = l.insert(2);
+node1.next = node2;
+l.insertNode(node1);
+l.insert(3);
+console.log('Detect Loop 3,1,2,4,1: ' + l.detectLoop());
+
+
 console.log('Circular Linked List')
 console.log('====================');
 var CircularLinkedList = require('./circular-linked-list.js');

@@ -43,7 +43,6 @@ module.exports = function DoublyLinkedList() {
       var first = head;
       var last = head.prev;
       while (first != last && first != head) {
-        console.log('DEBUG: ' + first.data + ' ' + last.data);
         if (first.data !== last.data) {
           return false;
         }
