@@ -55,6 +55,28 @@ console.log('Remove All: ' + list.toString());
 list.removeAll(5);
 console.log('Remove All: ' + list.toString());
 
+// Palidrome
+var p1 = new LinkedList();
+console.log('Is Palindrome (empty): ' + p1.isPalindrome());
+p1.insert(1);
+p1.insert(2);
+p1.insert(3);
+p1.insert(4);
+console.log('Is Palindrome 1,2,3,4: ' + p1.isPalindrome());
+var p2 = new LinkedList();
+p2.insert(1);
+p2.insert(2);
+p2.insert(2);
+p2.insert(1);
+console.log('Is Palindrome 1,2,2,1: ' + p2.isPalindrome());
+var p3 = new LinkedList();
+p3.insert(1);
+p3.insert(2);
+p3.insert(3);
+p3.insert(2);
+p3.insert(1);
+console.log('Is Palindrome 1,2,3,2,1: ' + p3.isPalindrome());
+
 console.log('Circular Linked List')
 console.log('====================');
 var CircularLinkedList = require('./circular-linked-list.js');
@@ -97,5 +119,28 @@ doubly.insert(2);
 doubly.insert(4);
 console.log('Insert: ' + doubly.toString());
 
+// Reverse
 doubly.reverse();
 console.log('Reverse: ' + doubly.toString());
+
+// Palidrome
+var p1 = new DoublyLinkedList();
+console.log('Is Palindrome (empty): ' + p1.isPalindrome());
+p1.insert(1);
+p1.insert(2);
+p1.insert(3);
+p1.insert(4);
+console.log('Is Palindrome 1,2,3,4: ' + p1.isPalindrome());
+var p2 = new DoublyLinkedList();
+p2.insert(1);
+p2.insert(2);
+p2.insert(2);
+p2.insert(1);
+console.log('Is Palindrome 1,2,2,1: ' + p2.isPalindrome());
+var p3 = new DoublyLinkedList();
+p3.insert(1);
+p3.insert(2);
+p3.insert(3);
+p3.insert(2);
+p3.insert(1);
+console.log('Is Palindrome 1,2,3,2,1: ' + p3.isPalindrome());

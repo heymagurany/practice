@@ -28,6 +28,7 @@ module.exports = function DoublyLinkedList() {
   };
   this.reverse = function () {
     if (head && head.next != head.prev) {
+      head = head.prev;
       var tail = head;
       do {
         var next = tail.next;
@@ -35,8 +36,22 @@ module.exports = function DoublyLinkedList() {
         tail.prev = next;
         tail = next;
       } while (tail != head);
-      head = head.prev;
     }
+  };
+  this.isPalindrome = function () {
+    if (head && head != head.next) {
+      var first = head;
+      var last = head.prev;
+      while (first != last && first != head) {
+        console.log('DEBUG: ' + first.data + ' ' + last.data);
+        if (first.data !== last.data) {
+          return false;
+        }
+        first = first.next;
+        last = last.prev;
+      }
+    }
+    return true;
   };
   this.toString = function() {
     if (!head) {

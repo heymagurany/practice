@@ -111,6 +111,24 @@ module.exports = function LinkedList() {
     }
     head = prev;
   };
+  // Is Palindrome: Use an internal linked-list as a stack
+  this.isPalindrome = function () {
+    var stack;
+    var current = head;
+    while (current) {
+      stack = new Node(stack, current.data);
+      current = current.next;
+    }
+    current = head;
+    while (stack) {
+      if (current.data !== stack.data) {
+        return false;
+      }
+      stack = stack.next;
+      current = current.next;
+    }
+    return true;
+  };
   // For testing
   this.toString = function () {
     if (!head) {
