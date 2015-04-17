@@ -14,6 +14,12 @@ root1 = tree1.insert(root1, 8);
 console.log(tree1.toString(root1));
 console.log();
 
+console.log('Size: ' + tree1.size(root1));
+console.log();
+
+console.log('Size (non-recursive): ' + tree1.size2(root1));
+console.log();
+
 console.log('Find:');
 var node4 = tree1.find(root1, 4);
 var node1 = tree1.find(root1, 1);

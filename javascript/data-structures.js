@@ -93,6 +93,32 @@ module.exports = {
       }
       return root;
     };
+    this.size = function (root) {
+      if (!root) {
+        return 0;
+      }
+      return 1 + this.size(root.left) + this.size(root.right);
+    };
+    this.size2 = function (root) {
+      if (!root) {
+        return 0;
+      }
+      var count = 0;
+      var stack = [];
+      stack.push(root);
+      while (stack.length > 0) {
+        var front = stack.shift();
+        console.log('DEBUG: ' + front.data);
+        count++;
+        if (front.left) {
+          stack.push(front.left);
+        }
+        if (front.right) {
+          stack.push(front.right);
+        }
+      }
+      return count;
+    };
     this.toString = function (root) {
       var subTree = function (node, pad, prefix, line) {
         return '\n' + pad + prefix + '->' + tree(node, pad + line + '  ');
