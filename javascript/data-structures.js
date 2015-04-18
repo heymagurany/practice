@@ -108,7 +108,6 @@ module.exports = {
       stack.push(root);
       while (stack.length > 0) {
         var front = stack.shift();
-        console.log('DEBUG: ' + front.data);
         count++;
         if (front.left) {
           stack.push(front.left);
@@ -119,6 +118,49 @@ module.exports = {
       }
       return count;
     };
+    this.depth = function (root) {
+      if (!root) {
+        return 0;
+      }
+      return 1 + Math.max(this.depth(root.left), this.depth(root.right));
+    };
+    this.depth2 = function (root) {
+      if (!root) {
+        return 0;
+      }
+      var depth = 0;
+      var visited = [];
+      var isVisted = function (node) {
+        for (var i = 0; i < visited.length; i++) {
+          if (visited[i] == node) {
+            return true;
+          }
+        }
+        return false;
+      }
+      var stack = [];
+      stack.push(root);
+      while (stack.length !== 0) {
+        var top = stack[stack.length - 1];
+        // Have we visited the left node?
+        if (top.left && !isVisted(top.left)) {
+          stack.push(top.left);
+        }
+        // Have we visited the right node?
+        else if (top.right && !isVisted(top.right)) {
+          stack.push(top.right);
+        }
+        // We're at the bottom, count the stack (depth). The next iteration
+        // will go down top's sibling.
+        else {
+          visited.push(top); // Inserts the leaf node.
+          depth = Math.max(depth, stack.length);
+          stack.pop();
+        }
+      }
+      return depth;
+    };
+
     this.toString = function (root) {
       var subTree = function (node, pad, prefix, line) {
         return '\n' + pad + prefix + '->' + tree(node, pad + line + '  ');

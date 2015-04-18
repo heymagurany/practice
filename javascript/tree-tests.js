@@ -53,7 +53,7 @@ console.log('Successor 6: ' + parent6.data);
 console.log('Successor 7: ' + parent7.data);
 console.log();
 
-console.log('Remove');
+console.log('Remove:');
 var root1 = tree1.remove(root1, node1);
 console.log('No Children 1:');
 console.log(tree1.toString(root1));
@@ -66,4 +66,14 @@ console.log(tree1.toString(root1));
 var root1 = tree1.remove(root1, root1);
 console.log('Root: 4');
 console.log(tree1.toString(root1));
+console.log();
+
+console.log('Depth: ' + tree1.depth(root1));
+console.log();
+
+tree1.insert(root1, 6);
+tree1.insert(root1, 9);
+tree1.insert(root1, 10);
+console.log(tree1.toString(root1));
+console.log('Depth (non-recursive): ' + tree1.depth2(root1));
 console.log();
