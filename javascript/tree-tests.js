@@ -77,3 +77,6 @@ tree1.insert(root1, 10);
 console.log(tree1.toString(root1));
 console.log('Depth (non-recursive): ' + tree1.depth2(root1));
 console.log();
+
+console.log('Is Balanced: ' + tree1.isBalanced(root1));
+console.log();

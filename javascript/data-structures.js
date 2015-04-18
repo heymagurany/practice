@@ -160,6 +160,29 @@ module.exports = {
       }
       return depth;
     };
+    this.isBalanced = function (root) {
+      var balancedDepth = function (info) {
+        if (!info.root) {
+          info.depth = 0;
+          return true;
+        }
+        var left = { root: info.root.left };
+        var right = { root: info.root.right };
+        if (!balancedDepth(left)) {
+          return false;
+        }
+        if (!balancedDepth(right)) {
+          return false;
+        }
+        info.depth = 1 + Math.max(left.depth, right.depth);
+        if (Math.abs(info.left - info.right) > 1) {
+          return false;
+        }
+        return true;
+      };
+
+      return balancedDepth({ root: root });
+    };
 
     this.toString = function (root) {
       var subTree = function (node, pad, prefix, line) {
