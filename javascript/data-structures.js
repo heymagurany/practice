@@ -195,6 +195,35 @@ module.exports = {
       }
       return !target || path[path.length - 1] == target;
     };
+    this.lca = function (root, x, y) {
+      if (root == x && root == y) {
+        return root;
+      }
+      if ((x.data < root.data && y.data >= root.data) || (x.data >= root.date && y.data < root.data)) {
+        return root;
+      }
+      if (x.data < root.data) {
+        return this.lca(root.left, x, y);
+      }
+      return this.lca(root.right, x, y);
+    };
+    this.lca2 = function (root, x, y) {
+      if (x && y && (x.data > y.data)) {
+        var swap = x;
+        x = y;
+        y = swap;
+      }
+      while (root && (y.data < root.data || x.data >= root.data)) {
+        console.log('DEBUG: ' + root.data + '-' + x.data + ',' + y.data);
+        if (x.data < root.data) {
+          root = root.left;
+        }
+        else {
+          root = root.right;
+        }
+      }
+      return root;
+    };
 
     this.toString = function (root) {
       var subTree = function (node, pad, prefix, line) {

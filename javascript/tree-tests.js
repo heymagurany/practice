@@ -89,3 +89,13 @@ var pathString = path.map(function(node) {
 });
 console.log(pathString.join('->'));
 console.log();
+
+var node3 = tree1.find(root1, 3);
+var node6 = tree1.find(root1, 6);
+var node9 = tree1.find(root1, 9);
+console.log('Least Common Ancestor: ' + tree1.lca(root1, node6, node9).data);
+console.log();
+
+console.log('Least Common Ancestor (non-recursive): ' + tree1.lca2(root1, node6, node9).data);
+console.log('Least Common Ancestor (non-recursive): ' + tree1.lca2(root1, node10, node9).data);
+console.log();
