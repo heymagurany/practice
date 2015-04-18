@@ -214,13 +214,51 @@ module.exports = {
         y = swap;
       }
       while (root && (y.data < root.data || x.data >= root.data)) {
-        console.log('DEBUG: ' + root.data + '-' + x.data + ',' + y.data);
         if (x.data < root.data) {
           root = root.left;
         }
         else {
           root = root.right;
         }
+      }
+      return root;
+    };
+    this.inOrder = function (root, callback) {
+      if (root) {
+        this.inOrder(root.left, callback);
+        callback(root);
+        this.inOrder(root.right, callback);
+      }
+    };
+    this.preOrder = function (root, callback) {
+      if (root) {
+        callback(root);
+        this.preOrder(root.left, callback);
+        this.preOrder(root.right, callback);
+      }
+    };
+    this.postOrder = function (root, callback) {
+      if (root) {
+        this.preOrder(root.left, callback);
+        this.preOrder(root.right, callback);
+        callback(root);
+      }
+    };
+    this.reconstruct = function (inOrder, preOrder) {
+      if (inOrder.length == 0 || preOrder.length == 0) {
+        return null;
+      }
+      var root = new Node(preOrder[0]);
+      var rootIndex = inOrder.indexOf(root.data);
+      if (rootIndex != 0) {
+        var leftInOrder = inOrder.slice(0, rootIndex);
+        var leftPreOrder = preOrder.slice(1, leftInOrder.length + 1);
+        root.left = this.reconstruct(leftInOrder, leftPreOrder);
+      }
+      if (rootIndex != inOrder.length - 1) {
+        var rightInOrder = inOrder.slice(rootIndex + 1, inOrder.length);
+        var rightPreOrder = preOrder.slice(preOrder.length - rightInOrder.length, preOrder.length);
+        root.right = this.reconstruct(rightInOrder, rightPreOrder);
       }
       return root;
     };
