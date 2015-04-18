@@ -80,3 +80,12 @@ console.log();
 
 console.log('Is Balanced: ' + tree1.isBalanced(root1));
 console.log();
+
+var node10 = tree1.find(root1, 10);
+var path = [];
+console.log('Ancestry 10: ' + tree1.ancestry(root1, node10, path));
+var pathString = path.map(function(node) {
+  return node.data;
+});
+console.log(pathString.join('->'));
+console.log();

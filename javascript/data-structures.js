@@ -183,6 +183,18 @@ module.exports = {
 
       return balancedDepth({ root: root });
     };
+    this.ancestry = function(root, target, path) {
+      while (root && target && (path.length == 0 || path[path.length - 1] != target)) {
+        path.push(root);
+        if(target.data < root.data) {
+          root = root.left;
+        }
+        else {
+          root = root.right;
+        }
+      }
+      return !target || path[path.length - 1] == target;
+    };
 
     this.toString = function (root) {
       var subTree = function (node, pad, prefix, line) {
