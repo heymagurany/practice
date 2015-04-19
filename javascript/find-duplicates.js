@@ -22,24 +22,22 @@ for (var i = 0; i < input.length; i++) {
 
 function search (list, char) {
   var start = 0;
-  var mid = Math.floor(list.length / 2);
-  var end = list.length;
-
-  while (mid < end) {
+  var end = list.length - 1;
+  while (start <= end) {
+    var mid = start + Math.floor((end - start) / 2);
     count2++;
-    console.log(char + ' (' + list[mid] + ') [' + list.slice(start, end).join(' ') + ']');
-    if (char < list[mid]) {
-      end = mid;
-    }
-    else if (char > list[mid]){
-      start = mid + 1;
-    }
-    else {
+    console.log(char + ' (' + list[mid] + ') [' + list.slice(start, end + 1).join(' ') + ']');
+    if (char === list[mid]) {
       return mid;
     }
-    mid = start + Math.floor((end - start) / 2);
+    if (char < list[mid]) {
+      end = mid - 1;
+    }
+    else {
+      start = mid + 1;
+    }
   }
-  return ~mid;
+  return ~start;
 }
 
 console.log(JSON.stringify(dupes));
