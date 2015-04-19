@@ -13,7 +13,6 @@ if (isNegative) {
 }
 
 do {
-  number = Math.floor(number);
   var digit = Math.floor(number % 10);
   if (count == index) {
     result = separator + result;
