@@ -99,6 +99,7 @@ module.exports = {
       }
       return 1 + this.size(root.left) + this.size(root.right);
     };
+    // Breadh-First-Search version
     this.size2 = function (root) {
       if (!root) {
         return 0;
