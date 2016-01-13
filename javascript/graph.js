@@ -28,6 +28,8 @@ function bfs(origin, visitor) {
     front.neighbors.forEach(function (neighbor) {
       // Check if we visited the node
       // TODO: Use a binary tree to store the visited nodes!
+      // actually, I'm not sure this will work since there's no
+      // guarantee that there won't be duplicate values.
       var found = queued[neighbor];
       // If we haven't visited the node, queue it and add it to
       // the list of visited nodes
