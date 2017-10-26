@@ -1,0 +1,180 @@
+<!--
+  Based on conversation efe88596-5b02-4e43-94ce-7ce8cf5c0e7d
+-->
+<html>
+  <head>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', function() {
+        var start = new Date(2017, 6, 22, 12, 35, 18);
+        var end = new Date(2017, 6, 22, 12, 35, 39);
+        var duration = end.getTime() - start.getTime();
+
+        var zoom = d3.zoom()
+          // .extent([[0,0,],[690,200]])
+          // .scaleExtent([.01, 10])
+          // .translateExtent([[-100,0],[duration+100,0]])
+          .on('zoom', zoomed);
+
+        var x = d3.scaleTime()
+          .domain([start, end])
+          .range([0, duration]);
+
+        var svg = d3.select('svg#timeline .segments');
+        var timeAnchor = svg.select('#time-anchor');
+        
+        var xAxis = d3.axisBottom(x)
+          .ticks(200)
+          .tickSize(200);
+          
+        var gX = svg.select('.x-axis')
+          .call(xAxis);
+        
+        var zoomOverlay = svg.select('.zoom-overlay')
+          .call(zoom);
+
+        var segments = svg.selectAll('.participant-communication');
+
+        // Scale to fit the entire conversation, 690 is the width of the segments section
+        var transform = d3.zoomIdentity.translate(0, 0).scale(690 / duration, 1);
+        zoom.transform(zoomOverlay, transform);
+
+        // TODO: when actually calculating the timeline, consider drawing the entire thing relative to milliseconds, then allowing the svg to resize itself to the view port.
+
+        function zoomed() {
+          let transform = d3.event.transform;
+
+          segments.attr('transform', `matrix(${transform.k},0,0,1,${transform.x},0)`);
+          gX.call(xAxis.scale(transform.rescaleX(x)));
+
+          // This should work because units and milliseconds are the same
+          var startMilliseconds = start.getTime() - transform.x / transform.k;
+          timeAnchor.text(d3.timeFormat('%c')(new Date(startMilliseconds)));
+        }
+
+        var wrapper = d3.select('#timeline-wrapper').node().getBoundingClientRect();
+        console.log(wrapper);
+
+        var componentBounds = d3.select('.hidden-segment-components #test1').node().getBoundingClientRect();
+        console.log(componentBounds);
+      });
+    </script>
+    <style>
+      .dialing {
+        fill: #195F7A;
+      }
+      .interact {
+        fill: #DA6F27;
+      }
+      .domain {
+        stroke: white;
+      }
+      .tick line {
+        stroke: rgb(224,224,224);
+      }
+      .line-dark {
+        stroke: rgb(204,204,204);
+      }
+      .hidden-segment-components {
+        position: absolute;
+        visibility: hidden;
+      }
+    </style>
+  </head>
+  <body style="font-family:Helvetica Neue, Arial, Helvetica, sans-serif;font-size:14px">
+    <div id="timeline-wrapper">
+
+      <div class="hidden-segment-components">
+        <div id="test1">
+          <div>user</div>
+          <div><b>Name:</b> Daniel Meyer</div>
+          <div><strong>Address:</strong> sip:5759c74d6befa01cd795965c+farnswoggle-llc.orgspan.com@localhost</div>
+          <div>calls</div>
+        </div>
+      </div>
+
+      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" viewBox="0 0 1020 294" id="timeline">
+
+        <defs>
+          <clipPath id="segments">
+            <rect width="690" height="240" />
+          </clipPath>
+          <line id="row-separator" x2="990" stroke-width="1" class="line-dark" />
+        </defs>
+
+        <rect width="1020" height="294" fill="white" stroke-width="1" class="line-dark" />
+
+        <g transform="translate(15,30)">
+
+          <text>Title</text>
+          <text x="990" text-anchor="end">Total Duration 21506</text> 
+          <line x2="990" stroke-width="3" stroke="rgb(204,204,204)" transform="translate(0,5)" />
+
+          <g transform="translate(0,10)">
+
+            <!-- Left-column: text -->
+            <foreignObject width="300" height="120">
+              <div xmlns="https://www.w3.org/1999/xhtml">
+                <div>user</div>
+                <div><b>Name:</b> Daniel Meyer</div>
+                <div><strong>Address:</strong> sip:5759c74d6befa01cd795965c+farnswoggle-llc.orgspan.com@localhost</div>
+                <div>calls</div>
+              </div>
+            </foreignObject>
+
+            <use href="#row-separator" transform="translate(0, 120)" />
+
+            <g transform="translate(0,121)">
+              <foreignObject width="300" height="80">
+                <div xmlns="https://www.w3.org/1999/xhtml">
+                  <div>external</div>
+                  <div><strong>Name:</strong> Indianapolis IN</div>
+                  <div><strong>Address:</strong> tel:+13172222222</div>
+                  <div>calls</div>
+                </div>
+              </foreignObject>
+            </g>
+
+            <use href="#row-separator" transform="translate(0, 201)" />
+
+            <!-- Right-column: bars -->
+            <g class="segments" transform="translate(300)" clip-path="url(#segments)">
+              <g class="tick" transform="translate(2,0)">
+                <line y2="240" />
+                <text id="time-anchor" transform="translate(2, 240)">the time</text>
+              </g>
+
+              <!-- This is the group to which D3 axes will be applied, which should be under the segment bars -->
+              <g class="x-axis" />
+
+              <g transform="translate(0,48.5)"><!-- y offset based on row height -->
+                <g class="participant-communication"> 
+                  <rect height="23" width="5200" x="0" class="dialing" />
+                  <rect height="23" width="16304" x="5200" class="interact" />
+                </g>
+              </g>
+
+              <g transform="translate(0,149.5)"><!-- y offset based on row height: 121 + 28.5 -->
+                <g class="participant-communication"> 
+                  <rect height="23" width="2931" x="2266" class="dialing" />
+                  <rect height="23" width="16307" x="5197" class="interact" />
+                </g>  
+              </g>
+
+              <rect class="zoom-overlay" width="938" height="201" fill="none" pointer-events="all" />
+            </g>
+
+            <g transform="translate(0,205)">
+              <rect width="20" height="20" class="dialing" />
+              <text x="22" y="15">Dialing</text>
+              <rect x="70" width="20" height="20" class="interact" />
+              <text x="92" y="15">Interact</text>
+            </g>
+          </g>
+
+        </g>
+        
+      </svg>
+    </div>
+  </body>
+</html>
